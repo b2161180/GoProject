@@ -1,2 +1,3 @@
 # GoProject
- - why no commit 
+ - GoのプロジェクトをGitにあげてみた
+ - GoでWebServerを立てるサンプルコードだゾ
