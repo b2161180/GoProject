@@ -11,7 +11,7 @@ import (
   "unsafe"
 )
 
-// 
+//sample 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
   r.ParseForm()
   fmt.Println(r.Form)
@@ -26,7 +26,7 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
   fmt.Fprintf(w, "Hello") 
 }
 
-// loginForm
+// login
 func login(w http.ResponseWriter, r *http.Request) {
   fmt.Println("method:", r.Method)
   
@@ -36,35 +36,32 @@ func login(w http.ResponseWriter, r *http.Request) {
   } 
 }
 
-// 
-func postform(w http.ResponseWriter, r *http.Request){
+// input
+func inputform(w http.ResponseWriter, r *http.Request){
   r.ParseForm() 
   if r.Method == "POST" {
     // Map 
     funcMap := template.FuncMap {
       "safehtml": func(text string)template.HTML { return template.HTML(text) }, 
     }
-  t := template.Must(template.New("T").Funcs(funcMap).ParseFiles("templates/post.html.tpl"))
+  t := template.Must(template.New("T").Funcs(funcMap).ParseFiles("templates/input.html.tpl"))
   // html output
   st := struct {
-    Param1 string 
-    Param2 string
+    Param1 string
+    Param2 string 
   }{
     Param1: r.FormValue("username"),
-    Param2: r.FormValue("password"), 
+    Param2: r.FormValue("password"),
   }
-  str := st.Param1+st.Param2
-  //output
-  output(str)
 
-  if err := t.ExecuteTemplate(w, "post.html.tpl", st); err != nil {
+  if err := t.ExecuteTemplate(w, "input.html.tpl", st); err != nil {
     log.Fatal(err)
   }
 
   }
 }
 
-// .txt
+// .md(MarkDown) output
 func output(str string){
   out, err := exec.Command("date","+%s").Output()
   if err != nil{
@@ -79,15 +76,50 @@ func output(str string){
   defer file.Close()
   fmt.Fprintln(file, str)
 }
-
+// 
 func bstring(b []byte) string {
   return *(*string)(unsafe.Pointer(&b))
+}
+
+// postResult
+func postform(w http.ResponseWriter, r *http.Request){
+  r.ParseForm()
+  if r.Method == "POST" {
+    // Map 
+    funcMap := template.FuncMap {
+      "safehtml": func(text string)template.HTML { return template.HTML(text) }, 
+  }
+  t := template.Must(template.New("T").Funcs(funcMap).ParseFiles("templates/post.html.tpl"))
+  // html output
+  st := struct {
+    Param1 string 
+    Param2 string
+    Param3 string
+    Param4 string
+    Param5 string
+  }{
+    Param1: r.FormValue("kenkyu"), 
+    Param2: r.FormValue("jugyou"),  
+    Param3: r.FormValue("ta"),
+    Param4: r.FormValue("other"),
+    Param5: r.FormValue("goal"),
+  }
+  str := st.Param1 + "\n" + st.Param2 + "\n" + st.Param3 + "\n" + st.Param4 + "\n" + st.Param5
+  //output
+  output(str)
+
+  if err := t.ExecuteTemplate(w, "post.html.tpl", st); err != nil {
+    log.Fatal(err)
+  }
+  }
+
 } 
 
 func main() {
   http.HandleFunc("/", sayhelloName)
   http.HandleFunc("/login", login)
-  http.HandleFunc("/form", postform)
+  http.HandleFunc("/form", inputform)
+  http.HandleFunc("/post", postform)
   err := http.ListenAndServe(":8080",nil)
 
   if err != nil {

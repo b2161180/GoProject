@@ -1,12 +1,8 @@
 <!DOCTYPE html>
-<head>
-<title></title>
-</head>
-
+<html>
+<head></head>
 <body>
-  POST PAGE
-  <br>
-  UserName -> {{.Param1|safehtml}}
-  Password -> {{.Param2|safehtml}}
+  <h3>送信が完了しました</h3>
+  <a href="/login">TOP</a> 
 </body>
 </html>
