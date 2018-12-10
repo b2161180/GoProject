@@ -44,20 +44,22 @@ func inputform(w http.ResponseWriter, r *http.Request){
     funcMap := template.FuncMap {
       "safehtml": func(text string)template.HTML { return template.HTML(text) }, 
     }
-  t := template.Must(template.New("T").Funcs(funcMap).ParseFiles("templates/input.html.tpl"))
-  // html output
-  st := struct {
-    Param1 string
-    Param2 string 
-  }{
-    Param1: r.FormValue("username"),
-    Param2: r.FormValue("password"),
-  }
+    t := template.Must(template.New("T").Funcs(funcMap).ParseFiles("templates/input.html.tpl"))
+    // html output
+    st := struct {
+      Param1 string
+      Param2 string 
+    }{
+      Param1: r.FormValue("username"),
+      Param2: r.FormValue("password"),
+    }
+    
+    //ここにParam1,Param2の値を使ったユーザ認証の処理？
+    //
 
-  if err := t.ExecuteTemplate(w, "input.html.tpl", st); err != nil {
-    log.Fatal(err)
-  }
-
+    if err := t.ExecuteTemplate(w, "input.html.tpl", st); err != nil {
+      log.Fatal(err)
+    }
   }
 }
 
@@ -105,7 +107,7 @@ func postform(w http.ResponseWriter, r *http.Request){
     Param5: r.FormValue("goal"),
   }
   str := st.Param1 + "\n" + st.Param2 + "\n" + st.Param3 + "\n" + st.Param4 + "\n" + st.Param5
-  //output
+  //Markdownに出力（形を整えたい）
   output(str)
 
   if err := t.ExecuteTemplate(w, "post.html.tpl", st); err != nil {
@@ -113,7 +115,12 @@ func postform(w http.ResponseWriter, r *http.Request){
   }
   }
 
-} 
+}
+
+//PostgreSQL
+func dbConnection(){
+  //
+}
 
 func main() {
   http.HandleFunc("/", sayhelloName)
