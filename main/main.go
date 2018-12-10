@@ -2,10 +2,13 @@ package main
 
 import (
   "fmt"
+  "os"
   "html/template"
   "net/http"
   "strings"
   "log"
+  "os/exec"
+  "unsafe"
 )
 
 // 
@@ -50,6 +53,10 @@ func postform(w http.ResponseWriter, r *http.Request){
     Param1: r.FormValue("username"),
     Param2: r.FormValue("password"), 
   }
+  str := st.Param1+st.Param2
+  //output
+  output(str)
+
   if err := t.ExecuteTemplate(w, "post.html.tpl", st); err != nil {
     log.Fatal(err)
   }
@@ -57,7 +64,25 @@ func postform(w http.ResponseWriter, r *http.Request){
   }
 }
 
- 
+// .txt
+func output(str string){
+  out, err := exec.Command("date","+%s").Output()
+  if err != nil{
+    log.Fatal(err)
+  }
+  file_name := bstring(out)
+  fmt.Println(file_name)
+  file, err := os.OpenFile("./textfile/log"+ file_name + ".md" , os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+  if err != nil {
+    log.Fatal(err)
+  }
+  defer file.Close()
+  fmt.Fprintln(file, str)
+}
+
+func bstring(b []byte) string {
+  return *(*string)(unsafe.Pointer(&b))
+} 
 
 func main() {
   http.HandleFunc("/", sayhelloName)
